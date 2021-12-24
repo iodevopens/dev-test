@@ -24,11 +24,11 @@ pipeline {
                 sh ''
             }
         }
-        post {
-            always {
-                echo 'Pipeline for worker app is complete...'
-                sh ''
-            }
+    }
+    post {
+        always {
+            echo 'Pipeline for worker app is complete...'
+            sh ''
         }
     }
 }
