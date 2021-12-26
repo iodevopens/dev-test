@@ -1,0 +1,42 @@
+pipeline {
+    agent {
+        docker {
+            image 'nodeJS 8.9.0'
+        }
+    }
+    stages {
+        stage('Build') {
+            when {
+                changeset '**/result/**'
+            }
+            steps {
+                echo 'Compiling result app'
+                dir ('result') {
+                    sh 'npm install'
+                }
+            }
+        }
+        stage('Test') {
+            when {
+                changeset '**/result/**'
+            }
+            steps {
+                echo 'Running unit tester on result app'
+                dir ('result') {
+                    sh 'npm test'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline for result app is complete...'
+        }
+        success {
+            slackSend (channel: "devops-tools", message: "Result Build and Test succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+        failure {
+            slackSend (channel: "devops-tools", message: "Result Build &/or Test failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+    }
+}

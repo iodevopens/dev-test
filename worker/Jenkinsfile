@@ -47,10 +47,10 @@ pipeline {
             echo 'Pipeline for worker app is complete...'
         }
         success {
-            slackSend (channel: "devops-tools", message: "Build succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+            slackSend (channel: "devops-tools", message: "Worker Build succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
         failure {
-            slackSend (channel: "devops-tools", message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+            slackSend (channel: "devops-tools", message: "Worker Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
     }
 }
