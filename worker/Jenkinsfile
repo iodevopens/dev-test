@@ -1,0 +1,56 @@
+pipeline {
+    agent {
+        docker {
+            image 'maven:3.6.1-jdk-8-alpine'
+            args '-v $HOME/.m2:/root/.m2'
+        }
+    }
+    stages {
+        stage('Build') {
+            when {
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Compiling worker app'
+                dir ('worker') {
+                    sh 'mvn compile'
+                }
+            }
+        }
+        stage('Test') {
+            when {
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Running unit tester on worker app'
+                dir ('worker') {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+        stage('Package') {
+            when {
+                branch 'master'
+                changeset '**/worker/**'
+            }
+            steps {
+                echo 'Packaging the worker app'
+                dir ('worker') {
+                    sh 'mvn package -DskipTests'
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline for worker app is complete...'
+        }
+        success {
+            slackSend (channel: "devops-tools", message: "Worker Build succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+        failure {
+            slackSend (channel: "devops-tools", message: "Worker Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        }
+    }
+}
