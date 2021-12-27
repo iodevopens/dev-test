@@ -58,6 +58,7 @@ pipeline {
             agent any
             when {
                 branch 'master'
+                changeset '**/worker/**'
             }
             steps {
                 echo 'Packaging the worker app'
