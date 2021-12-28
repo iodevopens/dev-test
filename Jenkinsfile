@@ -202,7 +202,7 @@ pipeline {
     stage('Deploy app') {
       agent any
       steps {
-        sh 'hostname; pwd'
+        sh 'docker-compose up -d'
       }
     }
 
